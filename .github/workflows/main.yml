@@ -1,0 +1,21 @@
+name: Unzip Project
+
+on:
+  push:
+    paths:
+      - 'project.zip'
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Unzip file
+        run: unzip -o project.zip -d .
+      - name: Commit unzipped files
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Unzipped project.zip" || echo "No changes to commit"
+          git push
