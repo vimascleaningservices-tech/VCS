@@ -1,21 +1,41 @@
-name: Unzip Project
-
+name: Publish VIMAS website
 on:
   push:
-    paths:
-      - 'project.zip'
-
+    branches: [main]
+    paths: ['project.zip', '.github/workflows/main.yml', 'docs/**']
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
 jobs:
-  unzip:
+  publish:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Unzip file
-        run: unzip -o project.zip -d .
-      - name: Commit unzipped files
+      - uses: actions/checkout@v4
+      - name: Expand website package
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Unzipped project.zip" || echo "No changes to commit"
-          git push
+          if [ ! -f docs/index.html ] || git diff-tree --no-commit-id --name-only -r HEAD | grep -qx project.zip; then
+            unzip -o project.zip -d .
+          fi
+          test -f docs/index.html
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs
+          if ! git diff --cached --quiet; then
+            git commit -m "Update published VIMAS website files"
+            git push
+          fi
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - name: Deploy website
+        id: deployment
+        uses: actions/deploy-pages@v4
