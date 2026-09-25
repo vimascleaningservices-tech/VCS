@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 280" fill="none">
+<defs><linearGradient id="body" x1="37" y1="150" x2="153" y2="160" gradientUnits="userSpaceOnUse"><stop stop-color="#819d7c"/><stop offset=".24" stop-color="#e5f0c2"/><stop offset=".53" stop-color="#cbdca2"/><stop offset=".87" stop-color="#91aa72"/><stop offset="1" stop-color="#567a56"/></linearGradient><linearGradient id="head" x1="54" y1="20" x2="137" y2="72"><stop stop-color="#49756b"/><stop offset=".5" stop-color="#214f44"/><stop offset="1" stop-color="#102f29"/></linearGradient><linearGradient id="shine"><stop stop-color="white" stop-opacity=".65"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient></defs>
+<path d="M69 76H110V104C110 118 147 126 150 155L155 238Q156 259 136 261H49Q29 260 30 239L36 155C38 127 69 117 69 103Z" fill="url(#body)" stroke="#375c45" stroke-opacity=".35"/>
+<path d="M77 85V108C76 130 49 134 46 160L41 236" stroke="url(#shine)" stroke-width="8" stroke-linecap="round"/>
+<path d="M69 76H110V96H69Z" fill="#173e35"/><path d="M72 81H108M72 88H108" stroke="#7a9380" stroke-width="2"/>
+<path d="M56 28Q55 18 67 17H136L153 24V44H121L109 60V77H68V54H56Z" fill="url(#head)" stroke="#173e35"/>
+<path d="M146 23H159V43H146Z" fill="#142e28"/><path d="M156 26H162V40H156Z" fill="#57796a"/>
+<path d="M116 49Q136 67 122 94L114 91Q125 70 104 62Z" fill="#214b3e"/>
+<path d="M64 25H135" stroke="#729687" stroke-width="3" stroke-linecap="round"/>
+<path d="M39 162Q91 173 150 161L153 226Q95 238 33 225Z" fill="#f7f8f2"/>
+<text x="91" y="195" fill="#153f38" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="25" letter-spacing="-2">vimas</text>
+<text x="91" y="213" fill="#45684e" text-anchor="middle" font-family="Arial,sans-serif" font-size="7" letter-spacing="2">A FRESH START</text>
+<path d="M49 249Q95 258 139 248" stroke="#f0f5d9" stroke-opacity=".45" stroke-width="3"/>
+</svg>
