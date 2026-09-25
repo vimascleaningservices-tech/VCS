@@ -23,7 +23,7 @@
  const stops=[['.hero',.50],['.service-card:nth-child(1)',.26],['.service-card:nth-child(2)',.79],['.service-card:nth-child(3)',.26],['#process',.27],['.area-section',.80],['#faq',.25],['#booking',.18],['footer',.79]].map(([selector,x])=>({el:document.querySelector(selector),x}));
  const obstacleSelector='h1,h2,h3,p,.step-tag,.step-number,.service-link,.service-number,.photo-caption,.visual-top,.header a,button,input,select,textarea,summary,.social-card,.footer-bottom,.booking-phone,.discover,.hero-actions a,.round-arrow,.process-visual figcaption,img';
  let bounds=[],pointer=[0,0],current=null,raf=0,lastTime=0,lastScroll=scrollY,route=[],obstacles=[],dirty=true,target=null;
- function measure(){const res=Math.round(350*Math.min(devicePixelRatio,2));canvas.width=canvas.height=res;gl.viewport(0,0,res,res);bounds=stops.map(stop=>({...stop,y:stop.el.getBoundingClientRect().top+scrollY}));dirty=true;wake();}
+ function measure(){const res=Math.round((innerWidth<1000?160:350)*Math.min(devicePixelRatio,2));canvas.width=canvas.height=res;gl.viewport(0,0,res,res);bounds=stops.map(stop=>({...stop,y:stop.el.getBoundingClientRect().top+scrollY}));dirty=true;wake();}
  function clearAt(x,y,r){return x>=r&&x<=innerWidth-r&&y>=r&&y<=innerHeight-r&&!obstacles.some(b=>x+r>b.left&&x-r<b.right&&y+r>b.top&&y-r<b.bottom);}
  function clearLine(a,b,r){const count=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.y-a.y)/10));for(let i=0;i<=count;i++){const t=i/count;if(!clearAt(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t,r))return false;}return true;}
  function plan(){
@@ -36,16 +36,17 @@
   const photo=document.querySelector('.hero-photo').getBoundingClientRect();
   const process=document.querySelector('#process').getBoundingClientRect();
   const inProcess=process.top<innerHeight*.5&&process.bottom>innerHeight*.5;
-  const atHero=scrollY<Math.max(80,bounds[0].el.offsetHeight*.45);
-  let size=atHero?235:inProcess?130:255;
+  const mobile=innerWidth<1000;
+  const atHero=scrollY<Math.max(80,bounds[0].el.offsetHeight*.45)&&(!mobile||(photo.top>60&&photo.top<innerHeight-80));
+  let size=mobile?(inProcess?68:90):(atHero?235:inProcess?130:255);
   if(atHero){
    // This corner overlap is intentional, and remains present from the first frame.
-   route=[{x:Math.min(innerWidth-125,photo.right-35),y:Math.max(130,photo.top+35)}];
+   route=[{x:Math.min(innerWidth-size/2-8,photo.right-25),y:Math.max(size/2+12,photo.top+25)}];
   }else{
-   if(inProcess){const steps=document.querySelector('.steps').getBoundingClientRect(),stage=document.querySelector('.process-sticky').getBoundingClientRect();desired.x=(steps.right+stage.left)/2;desired.y=innerHeight*.53;}
+   if(inProcess&&!mobile){const steps=document.querySelector('.steps').getBoundingClientRect(),stage=document.querySelector('.process-sticky').getBoundingClientRect();desired.x=(steps.right+stage.left)/2;desired.y=innerHeight*.53;}
    let best=null;
    // Find a smaller clear landing when the layout cannot accommodate full scale.
-   for(let candidate=size;candidate>=44&&!best;candidate-=12){
+   for(let candidate=size;candidate>=(mobile?30:44)&&!best;candidate-=12){
     const r=candidate*.44+10;let bestScore=Infinity;
     for(let y=r;y<=innerHeight-r;y+=18)for(let x=r;x<=innerWidth-r;x+=18){
      if(!clearAt(x,y,r))continue;
@@ -57,13 +58,13 @@
    if(!best)best={x:innerWidth-22,y:innerHeight*.42,size:40};
    size=best.size;route=[best];
   }
-  const spin=(scrollY-bounds[4].y)*.003;
+  const spin=(scrollY-bounds[4].y)*(mobile?.001:.003);
   target={size,rx:inProcess?.3:-.2,ry:inProcess?spin:(segment%2?-.55:.55),rz:inProcess?spin*.35:Math.sin((segment+t)*1.5)*.3};
   if(!current)current={...route[0],size,rx:target.rx,ry:target.ry,rz:target.rz};
 
  }
  function draw(time){
-  raf=0;if(document.hidden||innerWidth<1000||reduced.matches){host.style.opacity='0';return;}
+  raf=0;if(document.hidden||reduced.matches){host.style.opacity='0';return;}
   if(dirty)plan();if(!target||!current)return;
   const dt=Math.min(40,time-lastTime||16);lastTime=time;const smooth=1-Math.exp(-dt/135);
   if(route.length){const next=route[0],distance=Math.hypot(next.x-current.x,next.y-current.y),step=Math.min(distance,distance*(1-Math.exp(-dt/180)));if(distance<1)route.shift();else{const move={x:current.x+(next.x-current.x)*step/distance,y:current.y+(next.y-current.y)*step/distance};current.x=move.x;current.y=move.y;}}
